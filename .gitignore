@@ -41,8 +41,6 @@ ehthumbs.db
 Thumbs.db
 
 # Ignore Folder
-/data/raw
-/data/external
 
 # Ignore Developing file
 
