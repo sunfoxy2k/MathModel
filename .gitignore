@@ -41,10 +41,10 @@ ehthumbs.db
 Thumbs.db
 
 # Ignore Folder
-data/raw
-data/external
+/data/raw
+/data/external
 
 # Ignore Developing file
 
 # Ignore Sample File
-requirements/192___CO2011___ASSIGNMENT__English_.pdf
+/requirements/192___CO2011___ASSIGNMENT__English_.pdf
