@@ -5,12 +5,11 @@
 Updated Day:
 # ignore file to reuduce push requirements
 .gitignore ignore folders:
-/data/raw
-
 /data/working
 
 # folder structure:
 /data/raw : stores raw data from clients, developer can not change raw data
+currently link to git@github.com:CSSEGISandData/COVID-19.git
 
 /data/working: stores file .pkl are data that are engineering
 
