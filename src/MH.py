@@ -1,6 +1,7 @@
 
 import random
 import math
+import numpy as np
 
 def metropolisHasting(n, N, acceptanceRate, mode, likelihood, prior, proposal, proposalPDF, data, t0):
     # n: usage depend on the mode
@@ -80,15 +81,15 @@ def metropolisHasting(n, N, acceptanceRate, mode, likelihood, prior, proposal, p
             tPrimePrior = prior(tPrime)
             tPrimeLikely = likelihood(tPrime, data)
             
-            pPrime = tPrimeLikely + math.log(tPrimePrior)
-            p = tLikely + math.log(tPrior)
+            pPrime = tPrimeLikely + np.log(tPrimePrior)
+            p = tLikely + np.log(tPrior)
      
             if pPrime > p:
                 accepted.append(tPrime)
                 t = tPrime
             else:
                 a = random.uniform(0, 1)
-                if a < math.exp(pPrime - p):
+                if a < np.exp(pPrime - p):
                      accepted.append(tPrime)
                      t = tPrime
                 else:
