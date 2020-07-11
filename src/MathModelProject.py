@@ -24,6 +24,8 @@ def makeXBetaGammaData(BETA, GAMMA, size):
         X.append(random.gammavariate(BETA,GAMMA))
     return X
 
+
+
 def likelihoodX(t, data):
     #log of the equation 15 in the assignment document
     
@@ -48,11 +50,11 @@ def likelihoodX(t, data):
 def prior(t):
     # no preference / no known prior
     if(t[0] <= 0 or t[1] <= 0):
-        return 0.000000001
+        return 0
     return 1
 
-sigma1 = 0.05
-sigma2 = 0.025
+sigma1 = 1
+sigma2 = 0.5
 def proposal(t):
     # tPrime ~ Normal(t, sigma^2)
 
@@ -72,11 +74,12 @@ def proposalPDF(tPrime, t):
     #something might be wrong with this, joint normal probability?
     return probBeta * probGamma 
 
-size = 1000
+size = 3000
 data = makeXBetaGammaData(2, 0.5, size)
 
 sample = 10000
-ac, re = MH.metropolisHasting(sample, 1, 1, 3, likelihoodX, prior, proposal, proposalPDF, data, [0.1, 1])
+#ac, re = MH.metropolisHasting(sample, 1, 1, 3, ie.manual_log_like_normal, ie.prior, ie.transition_model, proposalPDF, ie.observation, [ie.mu_obs, 0.1])
+ac, re = MH.metropolisHasting(sample, 1, 1, 3, likelihoodX, prior, proposal, proposalPDF, data, [1, 0.1])
 
 print(ac)
 print("Acceptance Rate = ", len(ac)/(len(ac)+len(re)))
