@@ -16,6 +16,7 @@ def metropolisHasting(n, likelihood, prior, proposal, proposalPDF, data, t0, mod
     t = t0;
     accepted = []
     rejected = []
+    iterateAC = []
     
     if mode == 0:
         for i in range(n):
@@ -24,16 +25,19 @@ def metropolisHasting(n, likelihood, prior, proposal, proposalPDF, data, t0, mod
             p = likelihood(t, data) + np.log(prior(t)) + np.log(proposalPDF(tPrime, t))
             pPrime = likelihood(tPrime, data) + np.log(prior(tPrime)) + np.log(proposalPDF(t, tPrime))
      
-            if pPrime > p:
-                accepted.append(tPrime)
+            if pPrime > p:              
                 t = tPrime
+                accepted.append(t)
+                iterateAC.append(t)
             else:
                 a = np.random.uniform(0, 1)
                 if a < np.exp(pPrime - p):
-                     accepted.append(tPrime)
-                     t = tPrime
+                    t = tPrime
+                    accepted.append(t)
+                    iterateAC.append(t)
                 else:
-                    rejected.append(tPrime)      
+                    rejected.append(tPrime) 
+                    iterateAC.append(t)
     elif mode == 1:
         while len(accepted) < n:
             tPrime = proposal(t)
@@ -42,14 +46,17 @@ def metropolisHasting(n, likelihood, prior, proposal, proposalPDF, data, t0, mod
             pPrime = likelihood(tPrime, data) + np.log(prior(tPrime)) + np.log(proposalPDF(t, tPrime))
      
             if pPrime > p:
-                accepted.append(tPrime)
                 t = tPrime
+                accepted.append(t)
+                iterateAC.append(t)                
             else:
                 a = np.random.uniform(0, 1)
                 if a < np.exp(pPrime - p):
-                     accepted.append(tPrime)
-                     t = tPrime
+                    t = tPrime
+                    accepted.append(t)
+                    iterateAC.append(t)
                 else:
-                    rejected.append(tPrime)  
+                    rejected.append(tPrime)
+                    iterateAC.append(t)
                     
-    return accepted, rejected
+    return accepted, rejected, iterateAC
