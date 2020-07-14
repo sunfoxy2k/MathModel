@@ -9,7 +9,7 @@ sigma2 = float(input("Enter sigma2: "))
 burnIn = int(input("Enter burnIn: "))
 
 normal_density = lambda sigma, mu, x :1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (x - mu)**2 / (2 * sigma**2))
-uniform_density = lambda a, b, x: 1/b-a if (a <= x and x <= b) else 0
+uniform_density = lambda a, b, x: 1/(b-a) if (a <= x and x <= b) else 0
 gamma_density = lambda k, theta, x : x**(k-1)*np.exp(-x/theta) / (math.gamma(theta) * theta**k) #note: theta is the scale = 1/rate
 
 def piBeta(beta):
@@ -38,7 +38,7 @@ def logNormalProposalPDF(tPrime, t):
 
 dummyPDF = lambda tPrime, t: 1
 
-ac, re, trace, iac, ire = MH.metropolisHasting(m, logPDF, normalProposal, dummyPDF, [0.5, 0.1], burnIn)
+ac, re, trace, iac, ire = MH.metropolisHasting(m, logPDF, normalProposal, logNormalProposalPDF, [0.5, 0.1], burnIn)
 
 sumg = 0
 sumb = 0
