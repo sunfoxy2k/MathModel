@@ -3,10 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Ex3libMHSimplified as MH
 
+
 m = int(input("Enter m: "))
 sigma1 = float(input("Enter sigma1: "))
 sigma2 = float(input("Enter sigma2: "))
 burnIn = int(input("Enter burnIn: "))
+###
+# if you want to make sure that users input correctly using try and except instead
+###
+
 
 normal_density = lambda sigma, mu, x :1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (x - mu)**2 / (2 * sigma**2))
 uniform_density = lambda a, b, x: 1/b-a if (a <= x and x <= b) else 0
@@ -36,7 +41,8 @@ def normalProposal(t):
 def logNormalProposalPDF(tPrime, t):
     return np.log(normal_density(sigma1,t[0],tPrime[0]) * normal_density(sigma2,t[1],tPrime[1]))
 
-dummyPDF = lambda tPrime, t: 1
+dummyPDF = lambda tPrime, t: 1 
+# ThienPhuc You should explain this
 
 ac, re, trace, iac, ire = MH.metropolisHasting(m, logPDF, normalProposal, dummyPDF, [0.5, 0.1], burnIn)
 
@@ -108,15 +114,17 @@ ax.set_ylabel("Frequency")
 ax.set_title("Figure 6: Histogram of gamma")
 
 
-print(ac)
+# print(ac)
+# not need to print ac
+
 print("Acceptance Rate = ", len(ac)/(len(ac)+len(re)))
 
 print("Expected b = ", meanb)
 print("Expected g = ", meang)
 
-print("Done", flush = True)
+print("Done")
 
 
 plt.show()
 
-input()
+#input() not neccesary
