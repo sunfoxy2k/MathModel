@@ -31,8 +31,8 @@ class SIRValue:
 
 class SIRRatio:
     def __init__(self, infected_rate, recovered_rate):
-        self.infected = infected_rate
-        self.recovered = recovered_rate
+        self.infected = (infected_rate, 1)[infected_rate > 1]
+        self.recovered = (recovered_rate, 1)[recovered_rate > 1]
 
 
 class Slop:
@@ -56,68 +56,99 @@ def printSIRValues(sir_values, dt):
     i = 0
     for value in sir_values:
         print("\nWeek " + str(i))
-        print("Suspected: " + str(value.suspected))
-        print("Infected: " + str(value.infected))
-        print("Recovered: " + str(value.recovered))
+        value.showValue()
         i += dt
 
 
-# Derivative Functions
+#  Derivative Functions
+
+#  Calculate:
+#      - dSdt: derivative of the suspected in the period of time
+#      - dIdt: derivative of the infected in the period of time
+#      - dRdt: derivative of the recovered in the period of time
+
+#  dS = -(beta/N)*S*I
 def dSdt(t, sir_value, sir_ratio):
     infected_num = sir_value.infected
     suspected_num = sir_value.suspected
     total_population = sir_value.getTotalPopulation()
 
-    # Infected ratio per person
+    #  Infected ratio per person = beta / N
     infected_rate = sir_ratio.infected
     infected_ratio_per_person = infected_rate / total_population
 
-    return -(infected_ratio_per_person * (suspected_num*infected_num))
+    diffSuspected = -(infected_ratio_per_person *
+                      (suspected_num * infected_num))
+    return diffSuspected
 
 
+#  dI = (beta/N)*S*I - gamma*R = -dS - dR
 def dIdt(t, sir_value, sir_ratio):
-    #diffSuspected = dSdt(t, sir_value, sir_ratio)
-    #diffRecovered = dRdt(t, sir_value, sir_ratio)
-    #return -diffSuspected - diffRecovered
-    return sir_value.infected * (sir_value.suspected*sir_ratio.infected/sir_value.getTotalPopulation() - sir_ratio.recovered)
+    diffSuspected = dSdt(t, sir_value, sir_ratio)
+    diffRecovered = dRdt(t, sir_value, sir_ratio)
 
+    diffInfected = -diffSuspected - diffRecovered
+    return diffInfected
+
+
+#  dR = gamma*R
 def dRdt(t, sir_value, sir_ratio):
     infected_num = sir_value.infected
     recovered_rate = sir_ratio.recovered
 
-    return (recovered_rate * infected_num)
+    diffRecovered = (recovered_rate * infected_num)
+    return diffRecovered
 
 
-# RungeKutta Helper Functions
+#  Evaluate the values of the slop
+#  return: list of diferential values
+def calculateSlopValues(t, sir_value, sir_ratio):
+    dS = dSdt(t, sir_value, sir_ratio)
+    dI = dIdt(t, sir_value, sir_ratio)
+    dR = dRdt(t, sir_value, sir_ratio)
+
+    return [dS, dI, dR]
+
+
+#  RungeKutta Helper Functions
+
+#  Evaluate K1 ~ First slop of RK4
+#  K1 = f(t, value(t))
+#  return the list of Slops
 def calculateInitialSlop(time, sir_value, sir_ratio):
-    KS = dSdt(time, sir_value, sir_ratio)
-    KI = dIdt(time, sir_value, sir_ratio)
-    KR = dRdt(time, sir_value, sir_ratio)
+    [KS, KI, KR] = calculateSlopValues(time, sir_value, sir_ratio)
 
     suspected_slop = Slop(KS)
     infected_slop = Slop(KI)
     recovered_slop = Slop(KR)
 
-    K1Slop_value = [suspected_slop, infected_slop, recovered_slop]
+    K1Slops = [suspected_slop, infected_slop, recovered_slop]
 
-    return SIRRungeKuttaSlop(K1Slop_value)
+    return SIRRungeKuttaSlop(K1Slops)
 
 
+#  Evaluate K2/3 ~ Second and Third slop of RK4
+#  K2 = f(t + dt/2, value(t + dt*K1/2))
+#  K3 = f(t + dt/2, value(t + dt*K2/2))
+#  return the list of Slops
 def calculateMiddleSlop(time, dt, sir_value, sir_ratio, prev_slop):
     suspected_num = sir_value.suspected
     infected_num = sir_value.infected
     recovered_num = sir_value.recovered
 
-    prev_sus_slop = prev_slop[0]
-    prev_inf_slop = prev_slop[1]
+    #  retrieve value from prev slop
+    prev_sus_slop_val = prev_slop[0].value
+    prev_inf_slop_val = prev_slop[1].value
 
-    k_suspected_num = suspected_num + (dt*prev_sus_slop.value / 2)
-    k_infected_num = infected_num + (dt*prev_inf_slop.value / 2)
+    # TODO Refactor this code
+    #  Evaluate next SIR-value for counting the difference
+    #  S_next = S_current + (dt * S_prev_slop/2)
+    k_suspected_num = suspected_num + (dt*prev_sus_slop_val / 2)
+    k_infected_num = infected_num + (dt*prev_inf_slop_val / 2)
     k_sir_value = SIRValue(k_suspected_num, k_infected_num, recovered_num)
 
-    KS = dSdt(time + dt/2, k_sir_value, sir_ratio)
-    KI = dIdt(time + dt/2, k_sir_value, sir_ratio)
-    KR = dRdt(time + dt/2, k_sir_value, sir_ratio)
+    #  Calculate the slop values
+    [KS, KI, KR] = calculateSlopValues(time + dt/2, k_sir_value, sir_ratio)
 
     suspected_slop = Slop(KS)
     infected_slop = Slop(KI)
@@ -128,21 +159,27 @@ def calculateMiddleSlop(time, dt, sir_value, sir_ratio, prev_slop):
     return SIRRungeKuttaSlop(KSlop_value)
 
 
+#  Evaluate K4 ~ Last slop of RK4
+#  K4 = f(t + dt, value(t + dt*K3))
+#  return the list of Slops
 def calculateLastSlop(time, dt, sir_value, sir_ratio, prev_slop):
     suspected_num = sir_value.suspected
     infected_num = sir_value.infected
     recovered_num = sir_value.recovered
 
+    #  retrieve value from prev slop
     prev_sus_slop = prev_slop[0]
     prev_inf_slop = prev_slop[1]
 
+    # TODO Refactor this code
+    #  Evaluate next SIR-value for counting the difference
+    #  S_next = S_current + (dt * S_prev_slop)
     k_suspected_num = suspected_num + (dt*prev_sus_slop.value)
     k_infected_num = infected_num + (dt*prev_inf_slop.value)
     k_sir_value = SIRValue(k_suspected_num, k_infected_num, recovered_num)
 
-    KS = dSdt(time + dt, k_sir_value, sir_ratio)
-    KI = dIdt(time + dt, k_sir_value, sir_ratio)
-    KR = dRdt(time + dt, k_sir_value, sir_ratio)
+    #  Calculate the slop values
+    [KS, KI, KR] = calculateSlopValues(time + dt, k_sir_value, sir_ratio)
 
     suspected_slop = Slop(KS)
     infected_slop = Slop(KI)
@@ -154,12 +191,12 @@ def calculateLastSlop(time, dt, sir_value, sir_ratio, prev_slop):
 
 
 def calculateNextValue(curr_value, dt, K):
-    K1 = K[0].value
-    K2 = K[1].value
-    K3 = K[2].value
-    K4 = K[3].value
+    [K1, K2, K3, K4] = [slop.value for slop in K]
+
+    #  Calculate the difference of the current value and next value
     difference = (dt/6) * (K1 + 2*K2 + 2*K3 + K4)
 
+    #  next value = current value + difference
     return curr_value + difference
 
 
@@ -178,6 +215,7 @@ def approximateRK4SIR(sir_value, sir_ratio, t, dt=1):
     KI = [None]*4
     KR = [None]*4
 
+    # TODO Refactor the code here too
     for i in range(0, t, dt):
         # K1
         slop = calculateInitialSlop(i, sir_values[i], sir_ratio)
@@ -219,6 +257,7 @@ def approximateRK4SIR(sir_value, sir_ratio, t, dt=1):
     return sir_values
 
 
+# TODO Write function to strict the ratio of beta and gamma
 def RK4SIR(total_population, I0, R0, beta, gamma, time, dt):
     sir_value = SIRValue(0, I0, R0)
     sir_value.suspected = calculateSuspected(total_population, sir_value)
@@ -259,4 +298,4 @@ plt.title('SIR-RK4 Approximation')
 plt.legend()
 plt.show()
 
-input()
+#  input()
