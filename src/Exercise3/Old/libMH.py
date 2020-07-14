@@ -17,8 +17,11 @@ def metropolisHasting(n, likelihood, prior, proposal, proposalPDF, data, t0, bur
     accepted = []
     rejected = []
     iterateAC = []
+    samplingPlotAc = []
+    samplingPlotRe = []
+    i = 0
     
-    for i in range(burnIn):
+    for j in range(burnIn):
             tPrime = proposal(t)
 
             p = likelihood(t, data) + np.log(prior(t)) + np.log(proposalPDF(tPrime, t))
@@ -42,15 +45,19 @@ def metropolisHasting(n, likelihood, prior, proposal, proposalPDF, data, t0, bur
                 t = tPrime
                 accepted.append(t)
                 iterateAC.append(t)
+                samplingPlotAc.append(i)
             else:
                 a = np.random.uniform(0, 1)
                 if a < np.exp(pPrime - p):
                     t = tPrime
                     accepted.append(t)
                     iterateAC.append(t)
+                    samplingPlotAc.append(i)
                 else:
                     rejected.append(tPrime) 
                     iterateAC.append(t)
+                    samplingPlotRe.append(i)
+            i+=1
     elif mode == 1:
         while len(accepted) < n:
             tPrime = proposal(t)
@@ -61,15 +68,19 @@ def metropolisHasting(n, likelihood, prior, proposal, proposalPDF, data, t0, bur
             if pPrime > p:
                 t = tPrime
                 accepted.append(t)
-                iterateAC.append(t)                
+                iterateAC.append(t)  
+                samplingPlotAc.append(i)
             else:
                 a = np.random.uniform(0, 1)
                 if a < np.exp(pPrime - p):
                     t = tPrime
                     accepted.append(t)
                     iterateAC.append(t)
+                    samplingPlotAc.append(i)
                 else:
                     rejected.append(tPrime)
                     iterateAC.append(t)
-                    
-    return accepted, rejected, iterateAC
+                    samplingPlotRe.append(i)
+            i+=1
+                   
+    return accepted, rejected, iterateAC, samplingPlotAc, samplingPlotRe

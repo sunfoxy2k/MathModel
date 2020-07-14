@@ -63,7 +63,7 @@ dummyPDF = lambda tPrime, t: 1
 data = makeXBetaGammaData(givenBeta, givenGamma, size)
 #data = makeDataSIR(givenBeta, givenGamma, size)
 
-ac, re, trace = MH.metropolisHasting(m, likelihoodX, prior, normalProposal, normalProposalPDF, data, [3, 1], burnIn,0)
+ac, re, trace, iac, ire = MH.metropolisHasting(m, likelihoodX, prior, normalProposal, normalProposalPDF, data, [3, 1], burnIn,0)
 
 sumg = 0
 sumb = 0
@@ -71,8 +71,8 @@ for b,g in ac:
     sumb += b
     sumg += g
 meanb = sumb/len(ac)
-meang = sumb/len(ac)
-posterior_data = np.random.gamma(meanb,1/g,10000)
+meang = sumg/len(ac)
+posterior_data = np.random.gamma(meanb,1/meang,10000)
 
 dataHist = plt.figure(figsize=(10,6))
 ax = dataHist.add_subplot(1,2,1)
@@ -122,6 +122,28 @@ ax.hist(gammaAccepted, bins=35 ,)
 ax.set_xlabel("Value")
 ax.set_ylabel("Frequency")
 ax.set_title("Figure 6: Histogram of gamma")
+
+betaRejected = []
+gammaRejected= []
+for b,g in re:
+    betaRejected.append(b)
+    gammaRejected.append(g)
+
+dataHist = plt.figure(figsize=(12,9))
+ax = dataHist.add_subplot(2,1,1)
+ax.plot(iac, betaAccepted, '+', color='blue', label="Accepted")
+ax.plot(ire, betaRejected, 'x', color='red', label="Rejected")
+ax.set_ylabel("Value")
+ax.set_title("Figure 7: Sampling Plot of beta")
+ax.legend()
+
+ax = dataHist.add_subplot(2,1,2)
+ax.plot(iac, gammaAccepted, '+', color='blue', label="Accepted")
+ax.plot(ire, gammaRejected, 'x', color='red', label="Rejected")
+ax.set_xlabel("Iteration")
+ax.set_ylabel("Value")
+ax.set_title("Figure 8: Sampling Plot of gamma")
+ax.legend()
 
 
 print(ac)
