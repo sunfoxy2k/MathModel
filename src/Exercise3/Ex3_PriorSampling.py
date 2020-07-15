@@ -36,17 +36,23 @@ def normalProposal(t):
 def logNormalProposalPDF(tPrime, t):
     return np.log(normal_density(sigma1,t[0],tPrime[0]) * normal_density(sigma2,t[1],tPrime[1]))
 
-dummyPDF = lambda tPrime, t: 1
+dummyPDF = lambda tPrime, t: 1 # we can use this instead of the proposalPDF if it's symmertric
 
-ac, re, trace, iac, ire = MH.metropolisHasting(m, logPDF, normalProposal, logNormalProposalPDF, [0.5, 0.1], burnIn)
+trace, ac, re, iac, ire = MH.metropolisHasting(m, logPDF, normalProposal, logNormalProposalPDF, [0.5, 2], burnIn)
 
 sumg = 0
 sumb = 0
-for b,g in ac:
+betaTrace = []
+gammaTrace = []
+
+for b,g in trace:
     sumb += b
     sumg += g
-meanb = sumb/len(ac)
-meang = sumg/len(ac)
+    betaTrace.append(b)
+    gammaTrace.append(g)
+
+meanb = sumb/len(trace)
+meang = sumg/len(trace)
 
 betaAccepted = []
 gammaAccepted= []
@@ -76,11 +82,6 @@ ax.set_ylabel("Value")
 ax.set_title("Figure 2: Sampling Plot of gamma")
 ax.legend()
 
-betaTrace = []
-gammaTrace = []
-for b,g in trace:
-    betaTrace.append(b)
-    gammaTrace.append(g)
 
 bTrace = plt.figure(figsize=(10,10))
 ax = bTrace.add_subplot(2,2,1)
@@ -96,19 +97,18 @@ ax.set_ylabel("Value")
 ax.set_title("Figure 4: Trace of gamma")
 
 ax = bTrace.add_subplot(2,2,3)
-ax.hist(betaAccepted, bins=35 ,)
+ax.hist(betaTrace, bins=50 ,)
 ax.set_xlabel("Value")
 ax.set_ylabel("Frequency")
 ax.set_title("Figure 5: Histogram of beta")
 
 ax = bTrace.add_subplot(2,2,4)
-ax.hist(gammaAccepted, bins=35 ,)
+ax.hist(gammaTrace, bins=50 ,)
 ax.set_xlabel("Value")
 ax.set_ylabel("Frequency")
 ax.set_title("Figure 6: Histogram of gamma")
 
 
-print(ac)
 print("Acceptance Rate = ", len(ac)/(len(ac)+len(re)))
 
 print("Expected b = ", meanb)

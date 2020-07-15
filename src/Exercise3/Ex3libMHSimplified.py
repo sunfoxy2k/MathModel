@@ -2,19 +2,25 @@ import numpy as np
 
 def metropolisHasting(m, logPdf, proposal, logProposalPDF, t0, burnIn = 0):   
     #  m: number of sample to draw
-    # logPdf: h(t)
+    # logPdf: h(t), the pdf that's atleast proportional to our desired distribution
     # proposal(t) = q(t) : return a new t' from current t
     # proposalPDF(tPrime, t) = q(tPrime | t) : the probability density function of q(t)
     # t0: inital parameter
     # burnIn: number of ignored first iteration
 
+    #Return:
+    #traceValue: The return trace of t at all iteration, this will be our returned sample
+    #accepted: The accepted values, used for plotting
+    #rejected: The rejected values, used for plotting
+    #samplingPlotAc: The accepted values's iteration, used for plotting
+    #samplingPlotRe: The rejected values's iteration, used for plotting
+
     t = t0;
+    traceValue = []
     accepted = []
     rejected = []
-    iterateAC = []
     samplingPlotAc = []
     samplingPlotRe = []
-    i = 0
 
     for j in range(burnIn):
             tPrime = proposal(t)
@@ -29,7 +35,7 @@ def metropolisHasting(m, logPdf, proposal, logProposalPDF, t0, burnIn = 0):
                 if a < np.exp(pPrime - p):
                     t = tPrime
 
-    while len(accepted) < m:
+    for i in range(m):
          tPrime = proposal(t)
 
          p = logPdf(t) +logProposalPDF(tPrime, t)
@@ -37,19 +43,18 @@ def metropolisHasting(m, logPdf, proposal, logProposalPDF, t0, burnIn = 0):
      
          if pPrime > p:
              t = tPrime
+             traceValue.append(t)
              accepted.append(t)
-             iterateAC.append(t)
              samplingPlotAc.append(i)
          else:
              a = np.random.uniform(0, 1)
              if a < np.exp(pPrime - p):
                  t = tPrime
-                 accepted.append(t)
-                 iterateAC.append(t)
+                 traceValue.append(t)
+                 accepted.append(t)                 
                  samplingPlotAc.append(i)
              else:
-                 rejected.append(tPrime)
-                 iterateAC.append(t)
-                 samplingPlotRe.append(i)
-         i += 1                   
-    return accepted, rejected, iterateAC, samplingPlotAc, samplingPlotRe
+                 traceValue.append(t)
+                 rejected.append(tPrime)                 
+                 samplingPlotRe.append(i)                
+    return traceValue, accepted, rejected, samplingPlotAc, samplingPlotRe
