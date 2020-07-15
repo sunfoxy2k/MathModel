@@ -57,40 +57,40 @@ gamma_density = lambda k, theta, x : x**(k-1)*np.exp(-x/theta) / (math.gamma(the
 def gammaProposalPDF(tPrime, t):
     return gamma_density(t[0]**2/sigma1, sigma1/t[0], tPrime[0]) * gamma_density(t[1]**2/sigma2, sigma2/t[1], tPrime[1])
 
-dummyPDF = lambda tPrime, t: 1
+dummyPDF = lambda tPrime, t: 1 #we can use this instead of the proposalPDF if it's symmertric
 
 
 data = makeXBetaGammaData(givenBeta, givenGamma, size)
 #data = makeDataSIR(givenBeta, givenGamma, size)
 
-ac, re, trace, iac, ire = MH.metropolisHasting(m, likelihoodX, prior, normalProposal, normalProposalPDF, data, [3, 1], burnIn,0)
+trace, ac, re, iac, ire = MH.metropolisHasting(m, likelihoodX, prior, normalProposal, normalProposalPDF, data, [3, 1], burnIn)
 
 sumg = 0
 sumb = 0
-for b,g in ac:
+betaTrace = []
+gammaTrace = []
+for b,g in trace:
     sumb += b
     sumg += g
-meanb = sumb/len(ac)
-meang = sumg/len(ac)
+    betaTrace.append(b)
+    gammaTrace.append(g)
+
+meanb = sumb/len(trace)
+meang = sumg/len(trace)
 posterior_data = np.random.gamma(meanb,1/meang,10000)
 
 dataHist = plt.figure(figsize=(10,6))
 ax = dataHist.add_subplot(1,2,1)
-ax.hist( data,bins=35 ,)
+ax.hist( data,bins=50 ,)
 ax.set_xlabel("Value")
 ax.set_ylabel("Frequency")
 ax.set_title("Figure 1: Histogram of dataset")
 
 ax = dataHist.add_subplot(1,2,2)
-ax.hist( posterior_data,bins=35 ,)
+ax.hist( posterior_data,bins=50 ,)
 ax.set_xlabel("Value")
 ax.set_title("Figure 2: predicted GammaDist.(beta, gamma)")
 
-betaTrace = []
-gammaTrace = []
-for b,g in trace:
-    betaTrace.append(b)
-    gammaTrace.append(g)
 
 bTrace = plt.figure(figsize=(10,10))
 ax = bTrace.add_subplot(2,2,1)
@@ -105,23 +105,23 @@ ax.set_xlabel("Iteration")
 ax.set_ylabel("Value")
 ax.set_title("Figure 4: Trace of gamma")
 
-betaAccepted = []
-gammaAccepted= []
-for b,g in ac:
-    betaAccepted.append(b)
-    gammaAccepted.append(g)
-
 ax = bTrace.add_subplot(2,2,3)
-ax.hist(betaAccepted, bins=35 ,)
+ax.hist(betaTrace , bins=50 ,)
 ax.set_xlabel("Value")
 ax.set_ylabel("Frequency")
 ax.set_title("Figure 5: Histogram of beta")
 
 ax = bTrace.add_subplot(2,2,4)
-ax.hist(gammaAccepted, bins=35 ,)
+ax.hist(gammaTrace , bins=50 ,)
 ax.set_xlabel("Value")
 ax.set_ylabel("Frequency")
 ax.set_title("Figure 6: Histogram of gamma")
+
+betaAccepted = []
+gammaAccepted= []
+for b,g in ac:
+    betaAccepted.append(b)
+    gammaAccepted.append(g)
 
 betaRejected = []
 gammaRejected= []
