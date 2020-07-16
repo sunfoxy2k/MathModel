@@ -28,11 +28,14 @@ class SIRValue:
     def getTotalPopulation(self):
         return self.suspected + self.infected + self.recovered
 
+    def getValueByList(self):
+        return [self.suspected, self.infected, self.recovered]
+
 
 class SIRRatio:
     def __init__(self, infected_rate, recovered_rate):
-        self.infected = (infected_rate, 1)[infected_rate > 1]
-        self.recovered = (recovered_rate, 1)[recovered_rate > 1]
+        self.infected = infected_rate
+        self.recovered = recovered_rate
 
 
 class Slop:
@@ -132,20 +135,19 @@ def calculateInitialSlop(time, sir_value, sir_ratio):
 #  K3 = f(t + dt/2, value(t + dt*K2/2))
 #  return the list of Slops
 def calculateMiddleSlop(time, dt, sir_value, sir_ratio, prev_slop):
-    suspected_num = sir_value.suspected
-    infected_num = sir_value.infected
-    recovered_num = sir_value.recovered
+    #  Get the current sir values
+    [suspected_num, infected_num, recovered_num] = sir_value.getValueByList()
 
-    #  retrieve value from prev slop
-    prev_sus_slop_val = prev_slop[0].value
-    prev_inf_slop_val = prev_slop[1].value
+    #  Retrieve value from prev slop
+    [prev_sus, prev_inf, prev_rec] = [slop.value for slop in prev_slop]
 
-    # TODO Refactor this code
     #  Evaluate next SIR-value for counting the difference
     #  S_next = S_current + (dt * S_prev_slop/2)
-    k_suspected_num = suspected_num + (dt*prev_sus_slop_val / 2)
-    k_infected_num = infected_num + (dt*prev_inf_slop_val / 2)
-    k_sir_value = SIRValue(k_suspected_num, k_infected_num, recovered_num)
+    k_suspected_num = suspected_num + (dt*prev_sus / 2)
+    k_infected_num = infected_num + (dt*prev_inf / 2)
+    k_recovered_num = recovered_num
+
+    k_sir_value = SIRValue(k_suspected_num, k_infected_num, k_recovered_num)
 
     #  Calculate the slop values
     [KS, KI, KR] = calculateSlopValues(time + dt/2, k_sir_value, sir_ratio)
@@ -163,20 +165,20 @@ def calculateMiddleSlop(time, dt, sir_value, sir_ratio, prev_slop):
 #  K4 = f(t + dt, value(t + dt*K3))
 #  return the list of Slops
 def calculateLastSlop(time, dt, sir_value, sir_ratio, prev_slop):
-    suspected_num = sir_value.suspected
-    infected_num = sir_value.infected
-    recovered_num = sir_value.recovered
+    #  Get the current sir values
+    [suspected_num, infected_num, recovered_num] = sir_value.getValueByList()
 
-    #  retrieve value from prev slop
-    prev_sus_slop = prev_slop[0]
-    prev_inf_slop = prev_slop[1]
+    #  Retrieve value from prev slop
+    [prev_sus, prev_inf, prev_rec] = [slop.value for slop in prev_slop]
 
     # TODO Refactor this code
     #  Evaluate next SIR-value for counting the difference
     #  S_next = S_current + (dt * S_prev_slop)
-    k_suspected_num = suspected_num + (dt*prev_sus_slop.value)
-    k_infected_num = infected_num + (dt*prev_inf_slop.value)
-    k_sir_value = SIRValue(k_suspected_num, k_infected_num, recovered_num)
+    k_suspected_num = suspected_num + (dt*prev_sus)
+    k_infected_num = infected_num + (dt*prev_inf)
+    k_recovered_num = recovered_num
+
+    k_sir_value = SIRValue(k_suspected_num, k_infected_num, k_recovered_num)
 
     #  Calculate the slop values
     [KS, KI, KR] = calculateSlopValues(time + dt, k_sir_value, sir_ratio)
