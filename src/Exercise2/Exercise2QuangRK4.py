@@ -12,9 +12,9 @@ TIME = int(input("Enter the time to get the approximation: "))
 # SIR Class
 class SIRValue:
     def __init__(self, suspected_num, infected_num, recovered_num):
-        self.suspected = suspected_num
-        self.infected = infected_num
-        self.recovered = recovered_num
+        self.suspected = (suspected_num, 0)[suspected_num < 0]
+        self.infected = (infected_num, 0)[infected_num < 0]
+        self.recovered = (recovered_num, 0)[recovered_num < 0]
 
     def showValue(self):
         suspected_str = str(self.suspected)
