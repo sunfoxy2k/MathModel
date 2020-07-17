@@ -1,0 +1,256 @@
+\documentclass[a4paper]{article}
+%\usepackage{vntex}
+%\usepackage[english,vietnam]{babel}
+\usepackage[english]{babel}
+%\usepackage[utf8]{inputenc}
+
+%\usepackage[utf8]{inputenc}
+%\usepackage[francais]{babel}
+\usepackage{a4wide,amssymb,epsfig,latexsym,array,hhline,fancyhdr}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{multicol,longtable,amscd}
+\usepackage{diagbox}%Make diagonal lines in tables
+\usepackage{booktabs}
+\usepackage{alltt}
+\usepackage[framemethod=tikz]{mdframed}% For highlighting paragraph backgrounds
+\usepackage{caption,subcaption}
+\usepackage{xcolor}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage[unicode]{hyperref}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+%\usepackage{pstcol} 							% PSTricks with the standard color package
+\usepackage[export]{adjustbox}
+%%%%%%%%%%%%%%%%%%%%code format
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+%%%%%%%%%%%%%%%%%%%%
+%\usepackage{fancyhdr}
+\setlength{\headheight}{40pt}
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+    \put(0,-8){\includegraphics[width=8mm, height=8mm]{Images/hcmut.png}}
+    %\put(0,-8){\epsfig{width=10mm,figure=hcmut.eps}}
+   \end{picture}&
+	%\includegraphics[width=8mm, height=8mm]{hcmut.png} & %
+	\begin{tabular}{l}
+		\textbf{\bf \ttfamily Ho Chi Minh City University of Technology}\\
+		\textbf{\bf \ttfamily Faculty of Computer Science and Engineering}
+	\end{tabular} 	
+ \end{tabular}
+}
+\fancyhead[R]{
+	\begin{tabular}{l}
+		\tiny \bf \\
+		\tiny \bf 
+	\end{tabular}  }
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Project assignment of Mathematical Modeling (CO2011), Semester 2, Academic year 2019-2020}
+\fancyfoot[R]{\scriptsize \ttfamily Page {\thepage}/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+%%%
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\makeatletter
+\newcounter {subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection .\@alph\c@subsubsubsection}
+\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand*\l@subsubsubsection{\@dottedtocline{3}{10.0em}{4.1em}}
+\newcommand*{\subsubsubsectionmark}[1]{}
+\makeatother
+
+\everymath{\color{blue}}%make in-line maths symbols blue to read/check easily
+
+\sloppy
+\captionsetup[figure]{labelfont={small,bf},textfont={small,it},belowskip=-1pt,aboveskip=-9pt}
+%space remove between caption, figure, and text
+\captionsetup[table]{labelfont={small,bf},textfont={small,it},belowskip=-1pt,aboveskip=7pt}
+%space remove between caption, table, and text
+
+%\floatplacement{figure}{H}%forced here float placement automatically for figures
+%\floatplacement{table}{H}%forced here float placement automatically for table
+%the following settings (11 lines) are to remove white space before or after the figures and tables
+%\setcounter{topnumber}{2}
+%\setcounter{bottomnumber}{2}
+%\setcounter{totalnumber}{4}
+%\renewcommand{\topfraction}{0.85}
+%\renewcommand{\bottomfraction}{0.85}
+%\renewcommand{\textfraction}{0.15}
+%\renewcommand{\floatpagefraction}{0.8}
+%\renewcommand{\textfraction}{0.1}
+\setlength{\floatsep}{5pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{5pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+VIETNAM NATIONAL UNIVERSITY - HO CHI MINH CITY \\
+UNIVERSITY OF TECHNOLOGY \\
+FACULTY OF COMPUTER SCIENCE AND ENGINEERING
+\end{center}
+
+\vspace{1cm}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3cm]{Images/hcmut.png}
+\end{center}
+\end{figure}
+
+\vspace{1cm}
+
+
+\begin{center}
+\begin{tabular}{c}
+\multicolumn{1}{l}{\textbf{{\Large MATHEMATICAL MODELING (CO2011)}}}\\
+~~\\
+\hline
+\\
+\multicolumn{1}{l}{\textbf{{\Large Assignment}}}\\
+\\
+\textbf{{\Huge "The SIR Model}} \\
+\textbf{{\Huge in COVID-19 prediction"}}\\
+\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{1.5cm}
+
+\begin{table}[h]
+\begin{tabular}{rrl}
+\hspace{5 cm} & Advisors: & Nguyen An Khuong\\
+\hspace{5 cm} &  & Nguyen Tien Thinh\\
+\\
+& Candidates: & Phan Thiên Phúc -- 1852xxx \\
+& & Nguyen Quang Phuc -- 1852668 \\
+& & Vũ Minh Quang -- 1852xxx \\
+& & Nguyen Hoang Viet -- 1850059 \\
+\end{tabular}
+\end{table}
+\vspace{1.5cm}
+\begin{center}
+{\footnotesize HCMC, July 2020}
+\end{center}
+\end{titlepage}
+
+%\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Exercise 2 - The RK4 method in solving the SIR system}
+        \subsection{Preliminary}
+        The most widely known member of the Runge–Kutta family is generally referred to as "RK4", the "classic Runge–Kutta method" or simply as "the Runge–Kutta method".RK4 is one of the classic methods for numerical integration of ODE models. \\
+        Consider the following initial value problem of ODE 
+        \begin{equation}\label{ODE}
+            \begin{split}
+                \frac{dy}{dt} & = f(t,y) \\ 
+                 y(t_0) & = y_0
+            \end{split}
+        \end{equation}
+        where y(t) is the unknown function (scalar or vector) which I would like to approximate.\\
+        The iterative formula of RK4 method for solving ODE \eqref{ODE} is as follows
+        \begin{equation}\label{RK4}
+            \begin{split}
+                y_{n+1} & = y_n + \frac{\Delta t}{6}(k_1 + 2k_2 + 2k_3 + k4) \\
+                k_1 & = f(t_n,y_n) \\
+                k_2 & = f(t_n + \frac{\Delta t}{2}, y_n + \frac{k_1 \Delta t}{2}) \\
+                k_3 & = f(t_n + \frac{\Delta t}{2}, y_n + \frac{k_2 \Delta t}{2}) \\
+                k_4 & = f(t_n + \Delta t, y_n + k_3 \Delta t) \\
+                t_{n+1} & = t_n + \Delta t \\
+                n & = 0,1,2,3,...
+            \end{split}
+        \end{equation}
+        
+        \indent The SIR model is defined as \eqref{1}, \eqref{2}, \eqref{3}. where S(t) is the number of susceptible people in the population at time t, I(t) is the number of infectious people at time t, R(t) is the number of recovered people at time t, $\beta$ is the transmission rate, $\gamma$ represents the recovery rate, and N=S(t)+I(t)+R(t) is the fixed population. \\
+        \indent According to the general iterative formula \eqref{RK4}, the iterative formulas for S(t), I(t) and R(t) of SIR model can be written out. 
+        
+        \begin{equation}\label{RK4-SIR-1}
+            \begin{split}
+                S_{n+1} & = S_n + \frac{\Delta t}{6}(k_1^S + 2k_2^S + 2k_3^S + k4^S) \\
+                k_1^S & = f(t_n,S_n, I_n) = - \frac{\beta S_n I_n}{N} \\
+                k_2^S & = f(t_n + \frac{\Delta t}{2}, S_n + \frac{k_1^S \Delta t}{2}, I_n + \frac{k_1^I \Delta t}{2}) = -\frac{\beta}{N} ( S_n + \frac{k_1^S \Delta t}{2})(I_n + \frac{k_1^I \Delta t}{2})  \\
+                k_3^S & = f(t_n + \frac{\Delta t}{2}, S_n + \frac{k_2^S \Delta t}{2}, I_n + \frac{k_2^I \Delta t}{2}) = -\frac{\beta}{N} ( S_n + \frac{k_2^S \Delta t}{2})(I_n + \frac{k_2^I \Delta t}{2})  \\
+                k_4^S & = f(t_n + \Delta t, S_n + k_3^S \Delta t, I_n + k_3^I \Delta t) = -\frac{\beta}{N} (S_n + k_3^S \Delta t)(I_n + k_3^I \Delta t)
+            \end{split}
+        \end{equation}
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        \begin{equation}\label{RK4-SIR-2}
+            \begin{split}
+                I_{n+1} & = I_n + \frac{\Delta t}{6}(k_1^I+ 2k_2^I + 2k_3^I + k4^I) \\
+                k_1^I & = f(t_n,S_n, I_n) = \frac{\beta S_n I_n}{N} - \gamma I_n \\
+                k_2^I & = f(t_n + \frac{\Delta t}{2}, S_n + \frac{k_1^S \Delta t}{2}, I_n + \frac{k_1^I \Delta t}{2}) = \frac{\beta}{N} ( S_n + \frac{k_1^S \Delta t}{2})(I_n + \frac{k_1^I \Delta t}{2}) - \gamma (I_n + k_1^I \Delta t)  \\
+                k_3^I & = f(t_n + \frac{\Delta t}{2}, S_n + \frac{k_2^S \Delta t}{2}, I_n + \frac{k_2^I \Delta t}{2}) = \frac{\beta}{N} ( S_n + \frac{k_2^S \Delta t}{2})(I_n + \frac{k_2^I \Delta t}{2}) - \gamma (I_n + k_2^I \Delta t)  \\
+                k_4^I & = f(t_n + \Delta t, S_n + k_3^S \Delta t, I_n + k_3^I \Delta t) = \frac{\beta}{N} (S_n + k_3^S \Delta t)(I_n + k_3^I \Delta t) - \gamma (I_n + k_3^I \Delta t)
+            \end{split}
+        \end{equation}
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        \begin{equation}\label{RK4-SIR-3}
+            \begin{split}
+                R_{n+1} & = R_n + \frac{\Delta t}{6}(k_1^R + 2k_2^R + 2k_3^R + k_4^R) \\
+                k_1^R & = f(t_n, I_n) = \gamma I_n \\
+                k_2^R & = f(t_n + \frac{\Delta t}{2}, I_n + \frac{k_1^I \Delta t}{2}) = \gamma (I_n + k_1^I \Delta t)  \\
+                k_3^R & = f(t_n + \frac{\Delta t}{2}, I_n + \frac{k_2^I \Delta t}{2}) = \gamma (I_n + k_2^I \Delta t)  \\
+                k_4^R & = f(t_n + \Delta t, I_n + k_3^I \Delta t) = \gamma (I_n + k_3^I \Delta t)
+            \end{split}
+        \end{equation}
+        \indent Note that since the population N = S(t) + I(t) + R(t) is constant, there will have $\frac{dS}{dt} + \frac{dI}{dt} + \frac{dr}{dt} = 0$. Therefore, only two of the three ODEs are independent and sufficient to solve the ODEs. Here, only iterative formulas for S(t) and I(t) are used and R(t) is calculated by S(t)=N - I(t) - R(t).
+        
+        
+
+\end{document}
