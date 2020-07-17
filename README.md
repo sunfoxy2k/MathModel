@@ -40,7 +40,11 @@ bug_report.ipynb : report about problems related to code or in data
 work_need_to_do.ipynb: things need to finish next
 
 requirements.ipynb : store excact client requirements
-
+#Author
+Phan Thien Phuc - HCMUT
+Nguyen Quang Phuc - HCMUT
+Vu Minh Quang - HCMUT
+Nguyen Hoang Viet -HCMUT
 #########################
 =======
 # stardard_work
