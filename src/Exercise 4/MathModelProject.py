@@ -88,15 +88,19 @@ ContryOffset = [0,0,10,0,0,0,0,0,38,0,0,0,0,0]
 gammaDelay =   [0,0, 0,0,0,7,7,0, 0,0,0,0,0,0]
 betaDelay =    [0,0, 0,0,0,7,7,0, 0,0,0,0,0,0]
 
+PolicyStart =  [100,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+
 R0List = []
-max = -999999
+R0ListPolicy = []
 for i in range (0, numberOfCountry, 1):
     dRL = []
     dIdRL = []
     IListGamma = []
     IListBeta = []
     maxDelay = gammaDelay[i] if gammaDelay[i] > betaDelay[i] else betaDelay[i]
-    for j in range(ContryOffset[i],len(dRList[i])-maxDelay):
+
+    start = PolicyStart[i] if(PolicyStart[i] != -1) else len(dRList[i])-maxDelay           
+    for j in range(ContryOffset[i], start):
         dRL.append(dRList[i][j+gammaDelay[i]])
         dIdRL.append(dIdRList[i][j+betaDelay[i]])
         IListGamma.append(IList[i][j])
@@ -107,26 +111,38 @@ for i in range (0, numberOfCountry, 1):
     IListGamma = np.array(IListGamma)
     IListBeta = np.array(IListBeta)
 
+    dRLPolicy = []
+    dIdRLPolicy = []
+    IListPolicy = []
+    for k in range(start, len(dRList[i])-maxDelay):
+        dRLPolicy.append(dRList[i][k+gammaDelay[i]])
+        dIdRLPolicy.append(dIdRList[i][k+betaDelay[i]])
+        IListPolicy.append(IList[i][k])
+
+    dRLPolicy = np.array(dRLPolicy)
+    dIdRLPolicy = np.array(dIdRLPolicy)
+    IListPolicy = np.array(IListPolicy)
+
     sum = 0
+    sumPolicy = 0
     for beta, gamma in trace:
-        lamdaGamma = (gamma*IListGamma)
-        #likelihoodGamma = loglikelihood_standard_normal((dRL-lamdaGamma) / np.sqrt(lamdaGamma))
-        likelihoodGamma = loglikelihood_standard_normal_accept_ratio((dRL-lamdaGamma) / np.sqrt(lamdaGamma))
-        
-
-        lamdaBeta = (beta*IListBeta)
-        #likelihoodBeta = loglikelihood_standard_normal((dIdRL-lamdaBeta) / np.sqrt(lamdaBeta))
+        lamdaGamma = gamma*IListGamma
+        likelihoodGamma = loglikelihood_standard_normal_accept_ratio((dRL-lamdaGamma) / np.sqrt(lamdaGamma))      
+        lamdaBeta = beta*IListBeta
         likelihoodBeta = loglikelihood_standard_normal_accept_ratio((dIdRL-lamdaBeta) / np.sqrt(lamdaBeta))
-
         likelihood = likelihoodGamma + likelihoodBeta
-        if likelihood > max:
-            max = likelihood
-            #print("new max: ", likelihood)
-
         sum += np.exp(likelihood) * beta/gamma
+
+        lamdaGamma = gamma*IListPolicy
+        lamdaBeta = beta*IListPolicy
+        likPolicyGamma = loglikelihood_standard_normal_accept_ratio((dRLPolicy-lamdaGamma) / np.sqrt(lamdaGamma))  
+        likPolicyBeta = loglikelihood_standard_normal_accept_ratio((dIdRLPolicy-lamdaBeta) / np.sqrt(lamdaBeta))
+        sumPolicy += np.exp(likPolicyBeta+ likPolicyGamma) * beta/gamma
+
     R0List.append(sum)
+    R0ListPolicy.append(sumPolicy)
 
 for i in range (0, numberOfCountry, 1):
-    print(countryList[i], ": R0 = ", R0List[i])
+    print(countryList[i], ": R0 before policy = ", R0List[i], " | R0 after policy = ", R0ListPolicy[i])
 
 print("Done", flush = True)
