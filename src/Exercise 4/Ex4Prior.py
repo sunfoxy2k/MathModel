@@ -2,8 +2,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-sigma1 = float(input("Enter sigma1: "))
-sigma2 = float(input("Enter sigma2: "))
+sigma1 = 1.15#float(input("Enter sigma1: "))
+sigma2 = 0.43#float(input("Enter sigma2: "))
 
 normal_density = lambda sigma, mu, x :1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (x - mu)**2 / (2 * sigma**2))
 uniform_density = lambda a, b, x: 1/(b-a) if (a <= x and x <= b) else 0
@@ -13,14 +13,15 @@ def piBeta(beta):
     """
     prior distribution of beta is set to uniform U(10^-10, 1) because of lacking knowlegde for covid-19 tranmission rate 
     """
-    return uniform_density(10**-10, 1, beta)
+    return uniform_density(0.01, 4, beta)
 
 def piGamma(gamma):
     """
     prior distribution of gamma is assumed to follow N(0.5, 0.1), where the mean 0.5 is the inverse of averaged recovery time for
     covid-19 (2 weeks) and the standard deviation 0.1 is estimate for the reported recovered period from ~ 1-4 weeks 
     """
-    return normal_density(0.1, 0.5, gamma)
+    #return normal_density(0.1/7, 0.5/7, gamma)
+    return uniform_density(10**-3, 1, gamma)
 
 def logPDF(t):
     #pi(beta, gamma) = pi(beta) * pi(gamma)
