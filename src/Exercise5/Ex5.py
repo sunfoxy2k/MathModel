@@ -33,7 +33,7 @@ def traniningLoss(lossFuntion, proposal, data, t0, randomness, randomnessScaleFa
 
     ac = 0
     scaleCounter = 0
-    while ac < m:
+    while True:
         tNew = proposal(t, rand)
         newLoss = lossFuntion(tNew, data)
         
@@ -41,19 +41,17 @@ def traniningLoss(lossFuntion, proposal, data, t0, randomness, randomnessScaleFa
             t = tNew
             loss = newLoss 
             
-            print(ac, int(loss), t, rand, searchTime, flush=True)
             rand = randomness.copy() # reset randomness
-            searchTime = searchTimeBeforeScaling # reset searchTime
             scaleCounter = 0 # reset counter
             ac += 1            
         else:
             scaleCounter += 1
             if(scaleCounter > searchTime):
                 rand = randomnessScaleFactor*rand               
-                searchTime = timeScaleFactor*searchTime
 
-                print("BumpUp randomness: ", rand, searchTime, flush=True)
                 scaleCounter = 0 # reset counter
+
+            if ((rand >10).any()): break
 
 
         """
@@ -140,63 +138,69 @@ IList = np.array(IList)
 
 #csv part done
 
-print("Country List:")
-count = 0
-for s in countryList:
-    print(count,". ",s)
-    count += 1
+lis = [[0,60,168,10000]]
+lis.append([1,60,168,10000])
+lis.append([2,60,168,10000])
+lis.append([3,60,168,10000])
+lis.append([4,60,168,10000])
+lis.append([5,60,168,10000])
+lis.append([6,60,168,10000])
+lis.append([7,60,168,10000])
+lis.append([8,60,168,10000])
+lis.append([9,60,168,10000])
+lis.append([10,60,168,10000])
+lis.append([11,60,168,10000])
+lis.append([12,90,145,10000])
+lis.append([13,70,120,10000])
 
-countryID = int(input("Choose a country: "))
-start = int(input("Choose start day index (0-168): "))
-end = int(input("Choose end day index (startDay -> 168): "))
+for countryID ,start, end, generation in  lis:
 
-data = []
-data.append(np.array(IList[countryID])[start:end])
-data.append(np.array(RList[countryID])[start:end])
+    data = []
+    data.append(np.array(IList[countryID])[start:end])
+    data.append(np.array(RList[countryID])[start:end])
 
-I0 = data[0][0]
-R0 = data[1][0]
-time = end - start - 1
+    I0 = data[0][0]
+    R0 = data[1][0]
+    time = end - start - 1
 
-#betaGamma, loss = traniningLoss(1.1, SIRlossFunction, normalProposal, data, [0, 0], 200)
-generation = int(input("Number of generation: "))
-betaGamma, loss = traniningLoss(SIRlossFunction, normalProposal, data, [0.1, 0.1], [0.0001, 0.0001], 2, 5, generation)
+    #betaGamma, loss = traniningLoss(1.1, SIRlossFunction, normalProposal, data, [0, 0], 200)
+    betaGamma, loss = traniningLoss(SIRlossFunction, normalProposal, data, [0.1, 0.1], [0.001, 0.001], 1.5, 1000, generation)
 
-print("beta = ", betaGamma[0])
-print("gamma = ", betaGamma[1])
-print("Loss = ", loss)
+    print(countryList[countryID])
+    print("beta = ", betaGamma[0])
+    print("gamma = ", betaGamma[1])
+    print("Loss = ", loss)
 
 
-#! Ploting Graph
-I_predict, R_predict = rk4.RK4SIR(1000000000, I0, R0, betaGamma[0], betaGamma[1], time, 1)
-x = []
-for i in range(0, time + 1):
-    x.append(i)
+    #! Ploting Graph
+    I_predict, R_predict = rk4.RK4SIR(1000000000, I0, R0, betaGamma[0], betaGamma[1], time, 1)
+    x = []
+    for i in range(0, time + 1):
+        x.append(i)
 
-plt.figure(figsize=(12,7))
-# Real Data
-plt.subplot(121)
-plt.plot(x, data[0], label="Infected", color='red')
-plt.plot(x, data[1], label="Removed", color='blue')
-plt.xlabel('Week')
-plt.ylabel('People')
+    plt.figure(figsize=(12,7))
+    plt.title(countryList[countryID])
+    # Real Data
+    plt.subplot(121)
+    plt.plot(x, data[0], label="Infected", color='red')
+    plt.plot(x, data[1], label="Removed", color='blue')
+    plt.xlabel('Day')
+    plt.ylabel('People')
 
-plt.yscale('linear')
-plt.title('Real Covid Data')
-plt.legend()
+    plt.yscale('linear')
+    plt.title('Real Covid Data')
+    plt.legend()
 
-# Predicted Data
-plt.subplot(122)
-plt.plot(x, I_predict, label="Infected", color='red')
-plt.plot(x, R_predict, label="Removed", color='blue')
-plt.xlabel('Week')
-plt.ylabel('People')
+    # Predicted Data
+    plt.subplot(122)
+    plt.plot(x, I_predict, label="Infected", color='red')
+    plt.plot(x, R_predict, label="Removed", color='blue')
+    plt.xlabel('Day')
+    plt.ylabel('People')
 
-plt.yscale('linear')
-plt.title('Predicted Covid Data')
-plt.legend()
+    plt.yscale('linear')
+    plt.title('Predicted Covid Data')
+    plt.legend()
 
-plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25, wspace=0.35)
-plt.show()
-
-input()
+    plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25, wspace=0.35)
+    plt.savefig(countryList[countryID]+'.png')
